@@ -1,3 +1,0 @@
-images:
-- name: tester-alpine
-  context: examples/alpine

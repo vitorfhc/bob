@@ -1,0 +1,13 @@
+images:
+- name: alpine-dynamic
+  tags:
+  - "3.14-dynamic"
+  context: .
+  dockerfile: alpine/Dockerfile
+  buildArgs:
+    ALPINE_IMAGE: alpine:3.10
+- name: nginx-custom
+  tags:
+  - "custom-build"
+  context: .
+  dockerfile: nginx/Dockerfile
