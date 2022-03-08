@@ -1,0 +1,10 @@
+images:
+- name: custom-nginx
+  tags:
+  - "0.1.0"
+  - latest
+  context: .
+  dockerfile: nginx/Dockerfile
+  # target: ""
+  buildArgs:
+    NGINX_TAG: 1.21

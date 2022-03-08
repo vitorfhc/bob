@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -10,10 +11,14 @@ var rootCmd = &cobra.Command{
 	Use:   "bob",
 	Short: "Bob is an automated tool for building multiple Docker images",
 	Long: `Using this tool you may build several images in a monorepo.
-All you need is a bob.yaml file in the directory which you run the command.
+All you need is a bob.yaml or bob.yml file in the directory which you run the command.
 You could also define another file name with -f or --file flag.`,
-	Run: run,
 }
+
+var (
+	bobPath string
+	debug   bool
+)
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -24,9 +29,8 @@ func Execute() {
 	}
 }
 
-func run(cmd *cobra.Command, args []string) {}
-
 func init() {
-	rootCmd.PersistentFlags().StringP("file", "f", "bob.yaml", "yaml configuration file")
-	rootCmd.PersistentFlags().BoolP("push", "p", false, "push built images")
+	rootCmd.PersistentFlags().StringVarP(&bobPath, "file", "f", "bob.yaml", "yaml configuration file")
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug mode")
+	logrus.SetLevel(logrus.DebugLevel)
 }
