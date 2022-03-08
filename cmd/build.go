@@ -11,8 +11,11 @@ import (
 var buildCmd = &cobra.Command{
 	Use:   "build",
 	Short: "Builds Docker images",
-	Long:  ``,
-	Run:   run,
+	Long: `Examples:
+  bob build
+  bob build --file bobber.yaml
+  bob build --file bobber.yaml --file bobber2.yaml`,
+	Run: run,
 }
 
 func run(cmd *cobra.Command, args []string) {
