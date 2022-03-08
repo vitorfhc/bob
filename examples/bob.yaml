@@ -3,8 +3,8 @@ images:
   tags:
   - "0.1.0"
   - latest
-  context: .
+  context: examples
   dockerfile: nginx/Dockerfile
-  # target: ""
+  target: ""
   buildArgs:
     NGINX_TAG: 1.21

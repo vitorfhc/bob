@@ -16,8 +16,8 @@ You could also define another file name with -f or --file flag.`,
 }
 
 var (
-	bobPath string
-	debug   bool
+	bobPaths []string
+	debug    bool
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -30,7 +30,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&bobPath, "file", "f", "bob.yaml", "yaml configuration file")
+	rootCmd.PersistentFlags().StringArrayVarP(&bobPaths, "file", "f", []string{"bob.yaml"}, "yaml configuration file")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug mode")
 	logrus.SetLevel(logrus.DebugLevel)
 }

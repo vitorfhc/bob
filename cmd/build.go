@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"os"
+	"context"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/vitorfhc/bob/pkg/helpers"
+	"github.com/vitorfhc/bob/pkg/docker"
 )
 
 var buildCmd = &cobra.Command{
@@ -16,28 +16,20 @@ var buildCmd = &cobra.Command{
 }
 
 func run(cmd *cobra.Command, args []string) {
-	logrus.Debug("Running build command with configuration file: ", bobPath)
+	logrus.Debug("Running build command with configurations files ", bobPaths)
 
-	extensions := []string{".yaml", ".yml"}
-	withoutExt := helpers.GetFileWithoutExt(bobPath)
-	cfgFile, err := helpers.FindFileWithExtensions(withoutExt, extensions)
+	images, err := docker.NewImageListFromYamls(bobPaths...)
 	if err != nil {
-		msg := `Could not find a configuration file with the name %s or any of these extensions %s`
-		logrus.WithError(err).Fatalf(msg, bobPath, extensions)
-	}
-	logrus.Debug("Found configuration file ", cfgFile)
-
-	file, err := os.ReadFile(cfgFile)
-	if err != nil {
-		logrus.WithError(err).Fatalf("Could not read configuration file %s", cfgFile)
+		logrus.WithError(err).Fatal("Error reading configuration files")
 	}
 
-	// images := types.ImageList{}
-	// err = yaml.Unmarshal(file, images)
-	// if err != nil {
-	// 	logrus.WithError(err).Fatalf("Could not parse configuration file %s", cfgFile)
-	// }
-	// logrus.Info(images)
+	for _, image := range images.Images {
+		ctx := context.Background()
+		err = image.Build(ctx)
+		if err != nil {
+			logrus.WithError(err).Fatal("Error building image ", image.Name)
+		}
+	}
 }
 
 func init() {
