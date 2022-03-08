@@ -1,4 +1,3 @@
 images:
 - name: alpine-test
-  context: .
-  dockerfile: alpine/Dockerfile
+  context: alpine
