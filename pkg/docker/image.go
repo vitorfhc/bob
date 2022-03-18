@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/sirupsen/logrus"
 )
@@ -29,18 +28,13 @@ func (i *Image) Build(ctx context.Context) error {
 
 	localLogrus.Infof("Building image %s", i.Name)
 
-	dockerClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		return err
-	}
-
 	contextPacked, err := archive.TarWithOptions(i.Context, &archive.TarOptions{})
 	if err != nil {
 		return err
 	}
 	defer contextPacked.Close()
 
-	response, err := dockerClient.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
+	response, err := Client.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
 		Tags:       i.generateFullTags(),
 		Dockerfile: i.Dockerfile,
 		Target:     i.Target,
