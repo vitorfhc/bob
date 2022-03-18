@@ -58,6 +58,26 @@ Flags:
 Use "bob [command] --help" for more information about a command.
 ```
 
+### Configuration File (bob.yaml)
+
+### root schema
+
+| field | type | description | default | required |
+|----|---|---|---|---|
+| .images | list | list of images ([image schema](#image-schema)) | [] | |
+
+### image schema
+
+| field | type | description | default | required |
+|----|---|---|---|---|
+| .name | string | name of the image | | X |
+| .tags | list of strings | image tags | [] (this defaults to a single tag `latest`) | |
+| .context | string | build context | current dir | |
+| .dockerfile | string | path to Dockerfile relative to context | Dockerfile | |
+| .target | string | Dockerfile target | | |
+| .buildArgs | map of strings | build args | | |
+| .registry | string | image registry to push to | "" | |
+
 ### Example
 
 In the [examples folder](examples) you can find some ways to use `bob`.

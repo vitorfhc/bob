@@ -39,6 +39,10 @@ func (i *Image) FullName() string {
 func (i *Image) Build(ctx context.Context) error {
 	i.log(logrus.InfoLevel, "Building image", i.FullName())
 
+	if i.Context == "" {
+		i.Context = "."
+	}
+
 	contextPacked, err := archive.TarWithOptions(i.Context, &archive.TarOptions{})
 	if err != nil {
 		return err
