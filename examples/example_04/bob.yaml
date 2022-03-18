@@ -1,5 +1,5 @@
 images:
-- name: vitorfhc/alpine-dynamic
+- name: 278135249214.dkr.ecr.us-east-1.amazonaws.com/docker-images/testing
   tags:
   - "3.14-dynamic"
   context: .

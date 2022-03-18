@@ -17,6 +17,12 @@ func getBobConfig(cmd *cobra.Command) *bob.Config {
 	if config.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
+	usernameFlag := cmd.Flag("username")
+	passwordFlag := cmd.Flag("password")
+	if usernameFlag != nil && passwordFlag != nil {
+		config.AuthConfig.Username = usernameFlag.Value.String()
+		config.AuthConfig.Password = passwordFlag.Value.String()
+	}
 
 	return config
 }

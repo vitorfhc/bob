@@ -28,5 +28,6 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringP("file", "f", "bob.yaml", "yaml configuration file")
+	rootCmd.MarkFlagFilename("file")
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "wether to print debug messages")
 }

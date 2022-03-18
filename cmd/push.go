@@ -28,7 +28,7 @@ func runPush(cmd *cobra.Command, args []string) {
 
 	for _, image := range images.Images {
 		ctx := context.Background()
-		err = image.Push(ctx)
+		err = image.Push(ctx, cfg.AuthConfig)
 		if err != nil {
 			logrus.WithError(err).Fatal("Error pushing image ", image.Name)
 		}
@@ -37,4 +37,8 @@ func runPush(cmd *cobra.Command, args []string) {
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
+	pushCmd.Flags().StringP("username", "u", "", "username for the registry")
+	pushCmd.Flags().StringP("password", "p", "", "password for the registry")
+	pushCmd.MarkFlagRequired("username")
+	pushCmd.MarkFlagRequired("password")
 }

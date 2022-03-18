@@ -3,6 +3,8 @@ package docker
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"io"
 	"time"
@@ -26,7 +28,7 @@ type Image struct {
 
 // Build builds the Docker image
 func (i *Image) Build(ctx context.Context) error {
-	i.log(logrus.InfoLevel, "Building image ", i.Name)
+	i.log(logrus.InfoLevel, "Building image", i.Name)
 
 	contextPacked, err := archive.TarWithOptions(i.Context, &archive.TarOptions{})
 	if err != nil {
@@ -46,7 +48,7 @@ func (i *Image) Build(ctx context.Context) error {
 	}
 	defer func() {
 		response.Body.Close()
-		i.log(logrus.InfoLevel, "Elapsed time ", time.Since(now).String())
+		i.log(logrus.InfoLevel, "Elapsed time", time.Since(now).String())
 	}()
 
 	lastLineOutput := scanBody(response.Body, i.logger)
@@ -59,11 +61,20 @@ func (i *Image) Build(ctx context.Context) error {
 }
 
 // Push sends the Docker image to the registry
-func (i *Image) Push(ctx context.Context) error {
+func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
+	authJSON, err := json.Marshal(authCfg)
+	if err != nil {
+		return err
+	}
+	authB64 := base64.URLEncoding.EncodeToString(authJSON)
+	pushOptions := types.ImagePushOptions{
+		RegistryAuth: authB64,
+	}
+
 	for _, tag := range i.Tags {
 		fullName := i.Name + ":" + tag
-		i.log(logrus.InfoLevel, "Pushing image ", fullName)
-		body, err := envClient.ImagePush(ctx, fullName, types.ImagePushOptions{})
+		i.log(logrus.InfoLevel, "Pushing image", fullName)
+		body, err := envClient.ImagePush(ctx, fullName, pushOptions)
 		if err != nil {
 			return err
 		}
