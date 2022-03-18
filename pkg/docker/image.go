@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/archive"
@@ -34,6 +35,7 @@ func (i *Image) Build(ctx context.Context) error {
 	}
 	defer contextPacked.Close()
 
+	now := time.Now()
 	response, err := Client.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
 		Tags:       i.generateFullTags(),
 		Dockerfile: i.Dockerfile,
@@ -43,7 +45,10 @@ func (i *Image) Build(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer func() {
+		response.Body.Close()
+		localLogrus.Info("Elapsed time ", time.Since(now))
+	}()
 
 	var lastLine string
 	var lastLineOutput *OutputLine
