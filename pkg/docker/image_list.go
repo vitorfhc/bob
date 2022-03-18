@@ -1,7 +1,7 @@
 package docker
 
 import (
-	"github.com/vitorfhc/bob/pkg/helpers"
+	"github.com/vitorfhc/bob/pkg/helpers/fs"
 	"gopkg.in/yaml.v2"
 )
 
@@ -12,7 +12,7 @@ type ImageList struct {
 
 // NewImageListFromYaml creates a new ImageList from a single YAML config.
 func NewImageListFromYaml(file string) (*ImageList, error) {
-	content, err := helpers.ReadYamlFile(file)
+	content, err := fs.ReadYamlFile(file)
 	if err != nil {
 		return nil, err
 	}
