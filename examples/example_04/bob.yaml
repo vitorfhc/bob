@@ -1,5 +1,6 @@
 images:
-- name: 278135249214.dkr.ecr.us-east-1.amazonaws.com/docker-images/testing
+- name: docker-images/testing
+  registry: "278135249214.dkr.ecr.us-east-1.amazonaws.com"
   tags:
   - "3.14-dynamic"
   context: .

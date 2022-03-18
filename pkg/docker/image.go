@@ -22,13 +22,22 @@ type Image struct {
 	Dockerfile string             `yaml:"dockerfile"`
 	Target     string             `yaml:"target"`
 	BuildArgs  map[string]*string `yaml:"build_args"`
+	Registry   string             `yaml:""`
 
 	logger *logrus.Entry
 }
 
+// FullName joins the registry with image name
+func (i *Image) FullName() string {
+	if i.Registry == "" {
+		return i.Name
+	}
+	return i.Registry + "/" + i.Name
+}
+
 // Build builds the Docker image
 func (i *Image) Build(ctx context.Context) error {
-	i.log(logrus.InfoLevel, "Building image", i.Name)
+	i.log(logrus.InfoLevel, "Building image", i.FullName())
 
 	contextPacked, err := archive.TarWithOptions(i.Context, &archive.TarOptions{})
 	if err != nil {
@@ -72,7 +81,7 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 	}
 
 	for _, tag := range i.Tags {
-		fullName := i.Name + ":" + tag
+		fullName := i.FullName() + ":" + tag
 		i.log(logrus.InfoLevel, "Pushing image", fullName)
 		body, err := envClient.ImagePush(ctx, fullName, pushOptions)
 		if err != nil {
@@ -92,12 +101,12 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 
 func (i *Image) generateFullNames() []string {
 	if len(i.Tags) == 0 {
-		return []string{i.Name}
+		return []string{i.FullName()}
 	}
 
 	var tags []string
 	for _, tag := range i.Tags {
-		tags = append(tags, i.Name+":"+tag)
+		tags = append(tags, i.FullName()+":"+tag)
 	}
 	return tags
 }
