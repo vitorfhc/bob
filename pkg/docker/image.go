@@ -35,7 +35,7 @@ func (i *Image) Build(ctx context.Context) error {
 	defer contextPacked.Close()
 
 	now := time.Now()
-	response, err := Client.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
+	response, err := envClient.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
 		Tags:       i.generateFullNames(),
 		Dockerfile: i.Dockerfile,
 		Target:     i.Target,
@@ -63,7 +63,7 @@ func (i *Image) Push(ctx context.Context) error {
 	for _, tag := range i.Tags {
 		fullName := i.Name + ":" + tag
 		i.log(logrus.InfoLevel, "Pushing image ", fullName)
-		body, err := Client.ImagePush(ctx, fullName, types.ImagePushOptions{})
+		body, err := envClient.ImagePush(ctx, fullName, types.ImagePushOptions{})
 		if err != nil {
 			return err
 		}

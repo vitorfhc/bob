@@ -5,12 +5,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Client is the Docker client
-var Client *client.Client
+var envClient *client.Client
 
 func init() {
 	var err error
-	Client, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	envClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		logrus.WithError(err).Panic("Error creating Docker client")
 	}
