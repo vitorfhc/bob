@@ -1,6 +1,0 @@
-images:
-- name: nginx-custom
-  tags:
-  - "custom-build"
-  context: .
-  dockerfile: nginx/Dockerfile
