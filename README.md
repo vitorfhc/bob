@@ -9,6 +9,8 @@ This project is under heavy development.
 Tasks:
 
 - [x] Build images
+- [ ] Tests for pkg/docker
+- [ ] Tests for pkg/helpers
 - [ ] Push images
 
 ## Installing
