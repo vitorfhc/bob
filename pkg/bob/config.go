@@ -5,6 +5,7 @@ import "github.com/vitorfhc/bob/pkg/docker"
 // Config struct keeps all configuration variables
 type Config struct {
 	ConfigPath string
+	Debug      bool
 }
 
 // ToImageList reads config.ConfigPath and returns a new ImageList
