@@ -9,7 +9,7 @@ This project is under heavy development.
 Tasks:
 
 - [x] Build images
-- [ ] Push images [WIP]
+- [x] Push images
 - [ ] Tests for pkg/docker
 - [ ] Tests for pkg/helpers
 - [ ] Dependencies between images
