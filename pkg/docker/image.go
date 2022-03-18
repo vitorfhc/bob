@@ -66,6 +66,11 @@ func (i *Image) Build(ctx context.Context) error {
 	return nil
 }
 
+// Push sends the Docker image to the registry
+func (i *Image) Push(ctx context.Context) error {
+	return nil
+}
+
 func (i *Image) generateFullTags() []string {
 	if len(i.Tags) == 0 {
 		return []string{i.Name}

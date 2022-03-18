@@ -17,11 +17,6 @@ Examples:
   bob build --file bobber.yaml`,
 }
 
-var (
-	bobPath string
-	debug   bool
-)
-
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -32,5 +27,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&bobPath, "file", "f", "bob.yaml", "yaml configuration file")
+	rootCmd.PersistentFlags().StringP("file", "f", "bob.yaml", "yaml configuration file")
 }

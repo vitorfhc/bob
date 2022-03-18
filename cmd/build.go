@@ -5,7 +5,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/vitorfhc/bob/pkg/docker"
 )
 
 var buildCmd = &cobra.Command{
@@ -19,9 +18,11 @@ var buildCmd = &cobra.Command{
 }
 
 func runBuild(cmd *cobra.Command, args []string) {
-	logrus.Debug("Running build command with configuration file ", bobPath)
+	cfg := getBobConfig(cmd)
 
-	images, err := docker.NewImageListFromYaml(bobPath)
+	logrus.Debug("Running build command with configuration file ", cfg.ConfigPath)
+
+	images, err := cfg.ToImageList()
 	if err != nil {
 		logrus.WithError(err).Fatal("Error reading configuration file")
 	}
