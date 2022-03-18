@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"io"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -19,15 +20,13 @@ type Image struct {
 	Dockerfile string             `yaml:"dockerfile"`
 	Target     string             `yaml:"target"`
 	BuildArgs  map[string]*string `yaml:"build_args"`
+
+	logger *logrus.Entry
 }
 
 // Build builds the Docker image
 func (i *Image) Build(ctx context.Context) error {
-	localLogrus := logrus.WithFields(logrus.Fields{
-		"image": i.Name,
-	})
-
-	localLogrus.Infof("Building image %s", i.Name)
+	i.log(logrus.InfoLevel, "Building image ", i.Name)
 
 	contextPacked, err := archive.TarWithOptions(i.Context, &archive.TarOptions{})
 	if err != nil {
@@ -37,7 +36,7 @@ func (i *Image) Build(ctx context.Context) error {
 
 	now := time.Now()
 	response, err := Client.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
-		Tags:       i.generateFullTags(),
+		Tags:       i.generateFullNames(),
 		Dockerfile: i.Dockerfile,
 		Target:     i.Target,
 		BuildArgs:  i.BuildArgs,
@@ -47,17 +46,10 @@ func (i *Image) Build(ctx context.Context) error {
 	}
 	defer func() {
 		response.Body.Close()
-		localLogrus.Info("Elapsed time ", time.Since(now))
+		i.log(logrus.InfoLevel, "Elapsed time ", time.Since(now).String())
 	}()
 
-	var lastLine string
-	var lastLineOutput *OutputLine
-	scanner := bufio.NewScanner(response.Body)
-	for scanner.Scan() {
-		lastLine = scanner.Text()
-		lastLineOutput, _ = NewOutputLineFromJSON(lastLine)
-		localLogrus.Debug(lastLineOutput.String())
-	}
+	lastLineOutput := scanBody(response.Body, i.logger)
 
 	if lastLineOutput.HasError() {
 		return errors.New(lastLineOutput.String())
@@ -68,10 +60,26 @@ func (i *Image) Build(ctx context.Context) error {
 
 // Push sends the Docker image to the registry
 func (i *Image) Push(ctx context.Context) error {
+	for _, tag := range i.Tags {
+		fullName := i.Name + ":" + tag
+		i.log(logrus.InfoLevel, "Pushing image ", fullName)
+		body, err := Client.ImagePush(ctx, fullName, types.ImagePushOptions{})
+		if err != nil {
+			return err
+		}
+		defer body.Close()
+
+		lastLineOutput := scanBody(body, i.logger)
+
+		if lastLineOutput.HasError() {
+			return errors.New(lastLineOutput.String())
+		}
+	}
+
 	return nil
 }
 
-func (i *Image) generateFullTags() []string {
+func (i *Image) generateFullNames() []string {
 	if len(i.Tags) == 0 {
 		return []string{i.Name}
 	}
@@ -81,4 +89,31 @@ func (i *Image) generateFullTags() []string {
 		tags = append(tags, i.Name+":"+tag)
 	}
 	return tags
+}
+
+func (i *Image) initLogger() {
+	if i.logger == nil {
+		i.logger = logrus.WithFields(logrus.Fields{
+			"image": i.Name,
+		})
+	}
+}
+
+func (i *Image) log(level logrus.Level, msg ...interface{}) {
+	i.initLogger()
+	i.logger.Log(level, msg)
+}
+
+func scanBody(body io.ReadCloser, logger *logrus.Entry) *OutputLine {
+	var lastLine string
+	var lastLineOutput *OutputLine
+	scanner := bufio.NewScanner(body)
+	for scanner.Scan() {
+		lastLine = scanner.Text()
+		lastLineOutput, _ = NewOutputLineFromJSON(lastLine)
+		if logger != nil {
+			logger.Log(logrus.DebugLevel, lastLineOutput.String())
+		}
+	}
+	return lastLineOutput
 }
