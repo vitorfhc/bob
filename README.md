@@ -48,8 +48,10 @@ Available Commands:
   build       Builds Docker images
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
+  push        Pushed Docker images
 
 Flags:
+  -d, --debug         wether to print debug messages
   -f, --file string   yaml configuration file (default "bob.yaml")
   -h, --help          help for bob
 
@@ -79,6 +81,7 @@ images:
 ```
 
 > **Warning:** don't forget that the Dockerfile path (`.images[].dockerfile`) is relative to the context (`.images[].context`)!
+> Also, don't forget the context is relative to which directory you run `bob` command!
 
 ## Contributing
 
