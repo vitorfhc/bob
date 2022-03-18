@@ -14,13 +14,12 @@ All you need is a YAML file which has everything you need configured.
 
 Examples:
   bob build
-  bob build --file bobber.yaml
-  bob build --file bobber.yaml --file bobber2.yaml`,
+  bob build --file bobber.yaml`,
 }
 
 var (
-	bobPaths []string
-	debug    bool
+	bobPath string
+	debug   bool
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -33,5 +32,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringArrayVarP(&bobPaths, "file", "f", []string{"bob.yaml"}, "yaml configuration file")
+	rootCmd.PersistentFlags().StringVarP(&bobPath, "file", "f", "bob.yaml", "yaml configuration file")
 }

@@ -19,11 +19,11 @@ var buildCmd = &cobra.Command{
 }
 
 func run(cmd *cobra.Command, args []string) {
-	logrus.Debug("Running build command with configurations files ", bobPaths)
+	logrus.Debug("Running build command with configurations files ", bobPath)
 
-	images, err := docker.NewImageListFromYamls(bobPaths...)
+	images, err := docker.NewImageListFromYaml(bobPath)
 	if err != nil {
-		logrus.WithError(err).Fatal("Error reading configuration files")
+		logrus.WithError(err).Fatal("Error reading configuration file")
 	}
 
 	for _, image := range images.Images {

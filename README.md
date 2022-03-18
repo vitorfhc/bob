@@ -45,8 +45,8 @@ Available Commands:
   help        Help about any command
 
 Flags:
-  -f, --file string        yaml configuration file (default [bob.yaml])
-  -h, --help               help for bob
+  -f, --file string   yaml configuration file (default "bob.yaml")
+  -h, --help          help for bob
 
 Use "bob [command] --help" for more information about a command.
 ```
