@@ -15,11 +15,11 @@ var buildCmd = &cobra.Command{
   bob build
   bob build --file bobber.yaml
   bob build --file bobber.yaml --file bobber2.yaml`,
-	Run: run,
+	Run: runBuild,
 }
 
-func run(cmd *cobra.Command, args []string) {
-	logrus.Debug("Running build command with configurations files ", bobPath)
+func runBuild(cmd *cobra.Command, args []string) {
+	logrus.Debug("Running build command with configuration file ", bobPath)
 
 	images, err := docker.NewImageListFromYaml(bobPath)
 	if err != nil {
