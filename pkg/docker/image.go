@@ -128,7 +128,7 @@ func (i *Image) initLogger() {
 
 func (i *Image) log(level logrus.Level, msg ...interface{}) {
 	i.initLogger()
-	i.logger.Log(level, msg)
+	i.logger.Log(level, msg...)
 }
 
 func scanBody(body io.ReadCloser, output outputs.Output, logger *logrus.Entry) {
