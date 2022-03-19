@@ -12,6 +12,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/sirupsen/logrus"
+	"github.com/vitorfhc/bob/pkg/docker/outputs"
 )
 
 // Image is a struct that represents a Docker image
@@ -64,10 +65,11 @@ func (i *Image) Build(ctx context.Context) error {
 		i.log(logrus.InfoLevel, "Elapsed time", time.Since(now).String())
 	}()
 
-	lastLineOutput := scanBody(response.Body, i.logger)
+	buildOutput := &outputs.BuildOutput{}
+	scanBody(response.Body, buildOutput, i.logger)
 
-	if lastLineOutput.HasError() {
-		return errors.New(lastLineOutput.String())
+	if buildOutput.HasError() {
+		return errors.New(buildOutput.String())
 	}
 
 	return nil
@@ -93,10 +95,11 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 		}
 		defer body.Close()
 
-		lastLineOutput := scanBody(body, i.logger)
+		pushOutput := &outputs.PushOutput{}
+		scanBody(body, pushOutput, i.logger)
 
-		if lastLineOutput.HasError() {
-			return errors.New(lastLineOutput.String())
+		if pushOutput.HasError() {
+			return errors.New(pushOutput.String())
 		}
 	}
 
@@ -128,16 +131,17 @@ func (i *Image) log(level logrus.Level, msg ...interface{}) {
 	i.logger.Log(level, msg)
 }
 
-func scanBody(body io.ReadCloser, logger *logrus.Entry) *OutputLine {
+func scanBody(body io.ReadCloser, output outputs.Output, logger *logrus.Entry) {
 	var lastLine string
-	var lastLineOutput *OutputLine
 	scanner := bufio.NewScanner(body)
 	for scanner.Scan() {
 		lastLine = scanner.Text()
-		lastLineOutput, _ = NewOutputLineFromJSON(lastLine)
+		err := output.LoadFromJSON(lastLine)
+		if err != nil {
+			logger.Error(err)
+		}
 		if logger != nil {
-			logger.Log(logrus.DebugLevel, lastLineOutput.String())
+			logger.Log(logrus.DebugLevel, output.String())
 		}
 	}
-	return lastLineOutput
 }
