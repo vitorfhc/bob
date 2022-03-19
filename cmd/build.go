@@ -24,14 +24,14 @@ func runBuild(cmd *cobra.Command, args []string) {
 
 	images, err := cfg.ToImageList()
 	if err != nil {
-		logrus.WithError(err).Fatal("Error reading configuration file")
+		logrus.WithError(err).Panic("Error reading configuration file")
 	}
 
 	for _, image := range images.Images {
 		ctx := context.Background()
 		err = image.Build(ctx)
 		if err != nil {
-			logrus.WithError(err).Fatal("Error building image ", image.Name)
+			logrus.WithError(err).Panic("Error building image ", image.Name)
 		}
 	}
 }
