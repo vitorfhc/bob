@@ -23,6 +23,22 @@ func TestImage_generateFullNames(t *testing.T) {
 			},
 			want: []string{"test-image:latest"},
 		},
+		{
+			name: "image with one tag",
+			fields: fields{
+				Name: "test-image",
+				Tags: []string{"test-tag"},
+			},
+			want: []string{"test-image:test-tag"},
+		},
+		{
+			name: "image with multiple tags",
+			fields: fields{
+				Name: "test-image",
+				Tags: []string{"test-tag", "test-tag-2"},
+			},
+			want: []string{"test-image:test-tag", "test-image:test-tag-2"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
