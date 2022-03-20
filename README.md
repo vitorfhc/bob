@@ -18,11 +18,20 @@ Tasks:
 
 ## Installing
 
+### Using Go
+
+Run `go install` command as showed below:
+
+```bash
+$ export BOB_VERSION=latest # specify the version you want (example: v0.0.6)
+$ go install github.com/vitorfhc/bob@$BOB_VERSION
+```
+
 ### From source
 
 To install the project from its source code you need to clone this repository and have `golang` installed.
 
-```
+```bash
 $ git clone https://github.com/vitorfhc/bob
 $ cd bob
 $ go build -o bob
