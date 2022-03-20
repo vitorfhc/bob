@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -32,6 +33,9 @@ type Image struct {
 func (i *Image) FullName() string {
 	if i.Registry == "" {
 		return i.Name
+	}
+	if strings.HasSuffix(i.Registry, "/") {
+		return i.Registry + i.Name
 	}
 	return i.Registry + "/" + i.Name
 }
