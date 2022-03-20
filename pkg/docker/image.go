@@ -108,7 +108,7 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 
 func (i *Image) generateFullNames() []string {
 	if len(i.Tags) == 0 {
-		return []string{i.FullName()}
+		return []string{i.FullName() + ":latest"}
 	}
 
 	var tags []string
