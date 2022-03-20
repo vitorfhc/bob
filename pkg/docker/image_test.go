@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestImage_generateFullNames(t *testing.T) {
+func TestImage_FullNamesWithTags(t *testing.T) {
 	type fields struct {
 		Name string
 		Tags []string
@@ -46,8 +46,8 @@ func TestImage_generateFullNames(t *testing.T) {
 				Name: tt.fields.Name,
 				Tags: tt.fields.Tags,
 			}
-			if got := i.generateFullNames(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Image.generateFullNames() = %v, want %v", got, tt.want)
+			if got := i.FullNamesWithTags(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Image.FullNamesWithTags() = %v, want %v", got, tt.want)
 			}
 		})
 	}

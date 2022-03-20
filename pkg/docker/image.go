@@ -55,7 +55,7 @@ func (i *Image) Build(ctx context.Context) error {
 
 	now := time.Now()
 	response, err := envClient.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
-		Tags:       i.generateFullNames(),
+		Tags:       i.FullNamesWithTags(),
 		Dockerfile: i.Dockerfile,
 		Target:     i.Target,
 		BuildArgs:  i.BuildArgs,
@@ -109,7 +109,9 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 	return nil
 }
 
-func (i *Image) generateFullNames() []string {
+// FullNamesWithTags returns a list of strings, each string is the full name
+// of the image with one of its tags.
+func (i *Image) FullNamesWithTags() []string {
 	if len(i.Tags) == 0 {
 		return []string{i.FullName() + ":latest"}
 	}
