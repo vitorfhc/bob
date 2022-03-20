@@ -1,12 +1,10 @@
 package docker
 
 import (
-	"bufio"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"io"
 	"strings"
 	"time"
 
@@ -14,6 +12,7 @@ import (
 	"github.com/docker/docker/pkg/archive"
 	"github.com/sirupsen/logrus"
 	"github.com/vitorfhc/bob/pkg/docker/outputs"
+	"github.com/vitorfhc/bob/pkg/helpers/dkr"
 )
 
 // Image is a struct that represents a Docker image
@@ -70,7 +69,7 @@ func (i *Image) Build(ctx context.Context) error {
 	}()
 
 	buildOutput := &outputs.BuildOutput{}
-	scanBody(response.Body, buildOutput, i.logger)
+	dkr.ScanBody(response.Body, buildOutput, i.logger)
 
 	if buildOutput.HasError() {
 		return errors.New(buildOutput.String())
@@ -100,7 +99,7 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 		defer body.Close()
 
 		pushOutput := &outputs.PushOutput{}
-		scanBody(body, pushOutput, i.logger)
+		dkr.ScanBody(body, pushOutput, i.logger)
 
 		if pushOutput.HasError() {
 			return errors.New(pushOutput.String())
@@ -133,19 +132,4 @@ func (i *Image) initLogger() {
 func (i *Image) log(level logrus.Level, msg ...interface{}) {
 	i.initLogger()
 	i.logger.Log(level, msg...)
-}
-
-func scanBody(body io.ReadCloser, output outputs.Output, logger *logrus.Entry) {
-	var lastLine string
-	scanner := bufio.NewScanner(body)
-	for scanner.Scan() {
-		lastLine = scanner.Text()
-		err := output.LoadFromJSON(lastLine)
-		if err != nil {
-			logger.Error(err)
-		}
-		if logger != nil {
-			logger.Log(logrus.DebugLevel, output.String())
-		}
-	}
 }

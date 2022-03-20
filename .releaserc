@@ -5,6 +5,7 @@
             {"type": "fix", "scope": "*", "release": "patch"},
             {"type": "feat", "scope": "*", "release": "minor"},
             {"type": "docs", "scope": "*", "release": false},
+            {"type": "refac", "scope": "*", "release": false},
             {"type": "ci", "scope": "*", "release": false},
             {"type": "chore", "scope": "*", "release": false},
             {"type": "test", "scope": "*", "release": false},
