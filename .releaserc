@@ -14,7 +14,9 @@
             "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
         }
     }],
-    "@semantic-release/release-notes-generator",
-    "@semantic-release/github"
+    ["@semantic-release/github", {
+        "path": "bin/*"
+    }],
+    "@semantic-release/release-notes-generator"
   ]
 }
