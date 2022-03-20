@@ -46,7 +46,10 @@ jobs:
           go-version: 1.18
 
       - name: Run tests
-        run: go test -v ./...
+        run: go test -v -coverprofile c.out ./...
+      
+      - name: Coverage
+        run: go tool cover -func c.out
 
   release:
     runs-on: ubuntu-latest
