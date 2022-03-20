@@ -8,13 +8,13 @@ This project is under heavy development.
 
 Tasks:
 
-- [x] Build images
-- [x] Push images
-- [ ] Tests for pkg/docker
-- [ ] Tests for pkg/helpers
-- [ ] Dependencies between images
-- [ ] Parallel building
-- [ ] Parallel pushing
+- [x] Feature: build images
+- [x] Feature: push images
+- [x] Tests: pkg/helpers
+- [ ] Tests: pkg/docker
+- [ ] Feature: dependencies between images
+- [ ] Feature: parallel building
+- [ ] Feature: parallel pushing
 
 ## Installing
 
