@@ -118,6 +118,6 @@ For now we are just getting Pull Requests as contribution. There's not much defi
 
 ## License
 
-See [LICENSE](LICENSE.md) for more details.
+See [LICENSE](LICENSE) for more details.
 
 [⬆ Back to the top](#bob-the-builder)<br>
