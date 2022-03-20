@@ -1,0 +1,20 @@
+{
+  "plugins": [
+    ["@semantic-release/commit-analyzer", {
+        "releaseRules": [
+            {"type": "fix", "scope": "*", "release": "patch"},
+            {"type": "feat", "scope": "*", "release": "minor"},
+            {"type": "docs", "scope": "*", "release": false},
+            {"type": "ci", "scope": "*", "release": false},
+            {"type": "chore", "scope": "*", "release": false},
+            {"type": "test", "scope": "*", "release": false},
+            {"scope": "no-release", "release": false}
+        ],
+        "parserOpts": {
+            "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+        }
+    }],
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/github"
+  ]
+}
