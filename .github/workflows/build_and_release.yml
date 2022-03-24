@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -53,10 +56,10 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     needs: [build, tests]
     steps:
       - uses: actions/checkout@v2
-
       - name: Download
         uses: actions/download-artifact@v3
         with:
