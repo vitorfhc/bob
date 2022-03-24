@@ -11,6 +11,7 @@ Tasks:
 - [x] Feature: build images
 - [x] Feature: push images
 - [x] Tests: pkg/helpers
+- [ ] Improvement: use [spf13/viper](https://github.com/spf13/viper) for better configuration
 - [ ] Tests: pkg/docker
 - [ ] Feature: dependencies between images
 - [ ] Feature: parallel building
