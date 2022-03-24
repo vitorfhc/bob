@@ -17,7 +17,7 @@ jobs:
         os: [linux, darwin, windows]
         arch: [amd64]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -41,7 +41,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -59,7 +59,7 @@ jobs:
     if: github.event_name == 'push'
     needs: [build, tests]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download
         uses: actions/download-artifact@v3
         with:
