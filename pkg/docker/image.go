@@ -23,7 +23,7 @@ type Image struct {
 	Dockerfile string             `yaml:"dockerfile"`
 	Target     string             `yaml:"target"`
 	BuildArgs  map[string]*string `yaml:"buildArgs"`
-	Registry   string             `yaml:""`
+	Registry   string             `yaml:"registry"`
 
 	logger *logrus.Entry
 }
