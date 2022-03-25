@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"context"
-
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -26,13 +24,11 @@ func runBuild(cmd *cobra.Command, args []string) {
 	if err != nil {
 		logrus.WithError(err).Panic("Error reading configuration file")
 	}
-	images := imageList.Images
 
-	for _, image := range images {
-		ctx := context.Background()
-		err = image.Build(ctx)
+	for _, image := range imageList {
+		err = image.Build()
 		if err != nil {
-			logrus.WithError(err).Panic("Error building image ", image.Name)
+			logrus.WithError(err).Panic("Error building image ", image.FullName())
 		}
 	}
 }

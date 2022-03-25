@@ -26,11 +26,11 @@ func runPush(cmd *cobra.Command, args []string) {
 		logrus.WithError(err).Panic("Error reading configuration file")
 	}
 
-	for _, image := range images.Images {
+	for _, image := range images {
 		ctx := context.Background()
 		err = image.Push(ctx, cfg.AuthConfig)
 		if err != nil {
-			logrus.WithError(err).Panic("Error pushing image ", image.Name)
+			logrus.WithError(err).Panic("Error pushing image ", image.FullName())
 		}
 	}
 }

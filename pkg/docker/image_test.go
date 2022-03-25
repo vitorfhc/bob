@@ -43,8 +43,10 @@ func TestImage_FullNamesWithTags(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			i := &Image{
-				Name: tt.fields.Name,
-				Tags: tt.fields.Tags,
+				Config: &ImageConfig{
+					Name: tt.fields.Name,
+					Tags: tt.fields.Tags,
+				},
 			}
 			if got := i.FullNamesWithTags(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Image.FullNamesWithTags() = %v, want %v", got, tt.want)
@@ -90,8 +92,10 @@ func TestImage_FullName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			i := &Image{
-				Name:     tt.fields.Name,
-				Registry: tt.fields.Registry,
+				Config: &ImageConfig{
+					Name:     tt.fields.Name,
+					Registry: tt.fields.Registry,
+				},
 			}
 			if got := i.FullName(); got != tt.want {
 				t.Errorf("Image.FullName() = %v, want %v", got, tt.want)

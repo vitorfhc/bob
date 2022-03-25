@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/docker/docker v20.10.12+incompatible
+	github.com/samber/lo v1.11.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -29,6 +30,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/exp v0.0.0-20220325121720-054d8573a5d8 // indirect
 	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
