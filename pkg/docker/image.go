@@ -25,6 +25,8 @@ type Image struct {
 	BuildArgs  map[string]*string `yaml:"buildArgs"`
 	Registry   string             `yaml:"registry"`
 
+	Built bool
+
 	logger *logrus.Entry
 }
 
@@ -42,6 +44,10 @@ func (i *Image) FullName() string {
 // Build builds the Docker image
 func (i *Image) Build(ctx context.Context) error {
 	i.log(logrus.InfoLevel, "Building image", i.FullName())
+	if i.Built {
+		i.log(logrus.InfoLevel, "Image already built")
+		return nil
+	}
 
 	if i.Context == "" {
 		i.Context = "."
@@ -74,6 +80,8 @@ func (i *Image) Build(ctx context.Context) error {
 	if buildOutput.HasError() {
 		return errors.New(buildOutput.String())
 	}
+
+	i.Built = true
 
 	return nil
 }
