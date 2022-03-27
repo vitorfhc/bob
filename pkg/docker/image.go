@@ -34,14 +34,22 @@ func (i *Image) FullName() string {
 	return cfg.Registry + "/" + cfg.Name
 }
 
-// Build guarantees to construct the image only once by using sync.Once.
-func (i *Image) Build() error {
+// Build wraps the internal build function,
+// it guarantees to construct the image only once by using sync.Once.
+// If the image was already built, it returns (false, nil).
+// If any error occurs, it returns (false, err).
+// If the image was built succesfully, it returns (true, nil).
+func (i *Image) Build() (bool, error) {
 	var err error
+	built := false
 	i.buildOnce.Do(func() {
 		ctx := context.Background()
 		err = i.build(ctx)
+		if err != nil {
+			built = true
+		}
 	})
-	return err
+	return built, err
 }
 
 // Build constructs the Docker image.

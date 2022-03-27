@@ -26,9 +26,12 @@ func runBuild(cmd *cobra.Command, args []string) {
 	}
 
 	for _, image := range imageList {
-		err = image.Build()
+		built, err := image.Build()
 		if err != nil {
 			logrus.WithError(err).Panic("Error building image ", image.FullName())
+		}
+		if !built {
+			logrus.Infof("Image %s was already built", image.FullName())
 		}
 	}
 }
