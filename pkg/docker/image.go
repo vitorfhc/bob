@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -14,6 +15,25 @@ import (
 	"github.com/vitorfhc/bob/pkg/docker/outputs"
 	"github.com/vitorfhc/bob/pkg/helpers/dkr"
 )
+
+// ImageConfig has all configuration needed from a YAML file.
+type ImageConfig struct {
+	Name       string             `yaml:"name"`
+	Tags       []string           `yaml:"tags"`
+	Context    string             `yaml:"context"`
+	Dockerfile string             `yaml:"dockerfile"`
+	Target     string             `yaml:"target"`
+	BuildArgs  map[string]*string `yaml:"buildArgs"`
+	Registry   string             `yaml:"registry"`
+}
+
+// Image holds the information about a Docker image.
+type Image struct {
+	Config *ImageConfig
+
+	buildOnce sync.Once
+	logger    *logrus.Entry
+}
 
 // NewImage creates an Image using the given configuration.
 func NewImage(cfg *ImageConfig) *Image {
@@ -68,7 +88,11 @@ func (i *Image) build(ctx context.Context) error {
 	defer contextPacked.Close()
 
 	now := time.Now()
-	response, err := envClient.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
+	dockerClient, err := NewClient()
+	if err != nil {
+		return err
+	}
+	response, err := dockerClient.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
 		Tags:       i.FullNamesWithTags(),
 		Dockerfile: cfg.Dockerfile,
 		Target:     cfg.Target,
@@ -104,10 +128,14 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 	}
 
 	cfg := i.Config
+	dockerClient, err := NewClient()
+	if err != nil {
+		return err
+	}
 	for _, tag := range cfg.Tags {
 		fullName := i.FullName() + ":" + tag
 		i.log(logrus.InfoLevel, "Pushing image", fullName)
-		body, err := envClient.ImagePush(ctx, fullName, pushOptions)
+		body, err := dockerClient.ImagePush(ctx, fullName, pushOptions)
 		if err != nil {
 			return err
 		}

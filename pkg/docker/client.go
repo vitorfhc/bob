@@ -2,15 +2,12 @@ package docker
 
 import (
 	"github.com/docker/docker/client"
-	"github.com/sirupsen/logrus"
 )
 
-var envClient *client.Client
-
-func init() {
-	var err error
-	envClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		logrus.WithError(err).Panic("Error creating Docker client")
-	}
+// NewClient wraps the internal client.NewClientWithOpts function,
+// which creates a new Docker client using the options provided.
+// The default options used are the ones provided by client.FromEnv,
+// and the API version negotiation is enabled.
+func NewClient() (*client.Client, error) {
+	return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 }
