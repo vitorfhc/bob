@@ -38,8 +38,9 @@ func TestImagesSet_AddImages(t *testing.T) {
 			for i, img := range tt.imagesToAdd {
 				imagesToAdd[i], _ = NewImage(img)
 			}
-			is := NewImagesSet(imagesAdded...)
-			if err := is.AddImages(imagesToAdd...); (err != nil) != tt.wantErr {
+			globalImagesSet = NewImagesSet() // reinitializer global ImagesSet
+			AddImages(imagesAdded...)
+			if err := AddImages(imagesToAdd...); (err != nil) != tt.wantErr {
 				t.Errorf("ImagesSet.AddImages() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
