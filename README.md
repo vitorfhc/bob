@@ -16,7 +16,7 @@ Tasks:
 - [x] Tests: pkg/helpers
 - [x] Improvement: use [spf13/viper](https://github.com/spf13/viper) for better configuration
 - [ ] Tests: pkg/docker
-- [ ] Feature: dependencies between images
+- [ ] Feature: dependencies between images _(a graph dependency manager package has been already created [here](https://github.com/vitorfhc/bob/tree/main/pkg/deps))_
 - [ ] Feature: parallel building
 - [ ] Feature: parallel pushing
 
