@@ -15,8 +15,8 @@ Tasks:
 - [x] Feature: push images
 - [x] Tests: pkg/helpers
 - [x] Improvement: use [spf13/viper](https://github.com/spf13/viper) for better configuration
+- [x] Feature: dependencies between images
 - [ ] Tests: pkg/docker
-- [ ] Feature: dependencies between images _(a graph dependency manager package has been already created [here](https://github.com/vitorfhc/bob/tree/main/pkg/deps))_
 - [ ] Feature: parallel building
 - [ ] Feature: parallel pushing
 
@@ -92,6 +92,7 @@ Use "bob [command] --help" for more information about a command.
 | .target | string | Dockerfile target | | |
 | .buildArgs | map of strings | build args | | |
 | .registry | string | image registry to push to | "" | |
+| .needs | list of strings | strings referring to other images IDs that must be built before this one | [] | |
 
 ### Example
 
