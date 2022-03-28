@@ -109,11 +109,12 @@ func TestNewImage(t *testing.T) {
 		{
 			name: "image with defaults",
 			fields: map[string]interface{}{
-				"id": "test-id", // avoids random id
+				"id":   "test-id", // avoids random id
+				"name": "test-image",
 			},
 			want: map[string]interface{}{
 				"id":         "test-id",
-				"name":       "",
+				"name":       "test-image",
 				"tags":       []string{"latest"},
 				"context":    ".",
 				"dockerfile": "Dockerfile",
@@ -149,6 +150,13 @@ func TestNewImage(t *testing.T) {
 				"registry": "duckuhub",
 			},
 		},
+		{
+			name: "image with no name",
+			fields: map[string]interface{}{
+				"id": "test-id",
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -156,6 +164,9 @@ func TestNewImage(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewImage() error = %v, wantErr %v", err, tt.wantErr)
 				t.FailNow()
+			}
+			if err != nil {
+				return
 			}
 			got := map[string]interface{}{
 				"id":         img.Config.ID,

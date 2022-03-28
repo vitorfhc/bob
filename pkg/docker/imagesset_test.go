@@ -13,17 +13,17 @@ func TestImagesSet_AddImages(t *testing.T) {
 			name:        "adds images without error",
 			imagesAdded: []map[string]interface{}{},
 			imagesToAdd: []map[string]interface{}{
-				{"id": "1"},
+				{"id": "1", "name": "test-image"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "adds duplicated images",
 			imagesAdded: []map[string]interface{}{
-				{"id": "1"},
+				{"id": "1", "name": "test-image"},
 			},
 			imagesToAdd: []map[string]interface{}{
-				{"id": "1"},
+				{"id": "1", "name": "another-image"},
 			},
 			wantErr: true,
 		},

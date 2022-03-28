@@ -61,6 +61,20 @@ func NewImage(m map[string]interface{}) (*Image, error) {
 		v.Set(key, val)
 	}
 
+	fieldsNoEmpty := []string{"id", "name"}
+	invalidFields := []string{}
+	for _, field := range fieldsNoEmpty {
+		value := v.GetString(field)
+		if value == "" {
+			invalidFields = append(invalidFields, field)
+		}
+	}
+	if len(invalidFields) > 0 {
+		errMsg := fmt.Sprintf("Invalid fields: %s", strings.Join(invalidFields, ", "))
+		errMsg += ". All these fields are required."
+		return nil, errors.New(errMsg)
+	}
+
 	err := v.Unmarshal(&img.Config)
 	if err != nil {
 		return nil, err
