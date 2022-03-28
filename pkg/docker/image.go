@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -16,11 +17,13 @@ import (
 	"github.com/vitorfhc/bob/pkg/config"
 	"github.com/vitorfhc/bob/pkg/docker/outputs"
 	"github.com/vitorfhc/bob/pkg/helpers/dkr"
+	"github.com/vitorfhc/bob/pkg/helpers/random"
 )
 
 // ImageConfig has all the configurations for a Docker image.
 // They are defined in the bob.yaml file.
 type ImageConfig struct {
+	ID         string             `yaml:"id"`
 	Name       string             `yaml:"name"`
 	Tags       []string           `yaml:"tags"`
 	Context    string             `yaml:"context"`
@@ -42,7 +45,10 @@ type Image struct {
 func NewImage(m map[string]interface{}) (*Image, error) {
 	img := &Image{}
 
+	randomID := fmt.Sprintf("%s-%s", random.Adjective(), random.Animal())
+
 	v := viper.New()
+	v.SetDefault("id", randomID)
 	v.SetDefault("name", "")
 	v.SetDefault("tags", []string{"latest"})
 	v.SetDefault("context", ".")

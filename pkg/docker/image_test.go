@@ -107,9 +107,12 @@ func TestNewImage(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "image with defaults",
-			fields: map[string]interface{}{},
+			name: "image with defaults",
+			fields: map[string]interface{}{
+				"id": "test-id", // avoids random id
+			},
 			want: map[string]interface{}{
+				"id":         "test-id",
 				"name":       "",
 				"tags":       []string{"latest"},
 				"context":    ".",
@@ -120,8 +123,9 @@ func TestNewImage(t *testing.T) {
 			},
 		},
 		{
-			name: "image with defaults",
+			name: "image with no defaults",
 			fields: map[string]interface{}{
+				"id":         "test-id",
 				"name":       "xablau",
 				"tags":       []string{"lol"},
 				"context":    "./dir",
@@ -133,6 +137,7 @@ func TestNewImage(t *testing.T) {
 				"registry": "duckuhub",
 			},
 			want: map[string]interface{}{
+				"id":         "test-id",
 				"name":       "xablau",
 				"tags":       []string{"lol"},
 				"context":    "./dir",
@@ -153,6 +158,7 @@ func TestNewImage(t *testing.T) {
 				t.FailNow()
 			}
 			got := map[string]interface{}{
+				"id":         img.Config.ID,
 				"name":       img.Config.Name,
 				"tags":       img.Config.Tags,
 				"context":    img.Config.Context,

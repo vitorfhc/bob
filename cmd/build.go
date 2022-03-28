@@ -32,8 +32,9 @@ func runBuild(cmd *cobra.Command, args []string) {
 		images[i] = image
 	}
 
-	for _, image := range images {
-		built, err := image.Build()
+	docker.AddImages(images...)
+	docker.IterateImages(func(id string, img *docker.Image) {
+		built, err := img.Build()
 		if err != nil {
 			logrus.WithError(err).Panic("Error building image")
 		}
@@ -42,7 +43,7 @@ func runBuild(cmd *cobra.Command, args []string) {
 		} else {
 			logrus.Info("Image built successfully")
 		}
-	}
+	})
 }
 
 func init() {

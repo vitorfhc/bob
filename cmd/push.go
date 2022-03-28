@@ -33,8 +33,9 @@ func runPush(cmd *cobra.Command, args []string) {
 		images[i] = image
 	}
 
-	for _, image := range images {
-		pushed, err := image.Push()
+	docker.AddImages(images...)
+	docker.IterateImages(func(id string, img *docker.Image) {
+		pushed, err := img.Push()
 		if err != nil {
 			logrus.WithError(err).Panic("Error pushing image")
 		}
@@ -43,7 +44,7 @@ func runPush(cmd *cobra.Command, args []string) {
 		} else {
 			logrus.Info("Image pushed successfully")
 		}
-	}
+	})
 }
 
 func init() {
