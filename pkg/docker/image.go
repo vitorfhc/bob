@@ -31,6 +31,7 @@ type ImageConfig struct {
 	Target     string             `yaml:"target"`
 	BuildArgs  map[string]*string `yaml:"buildArgs"`
 	Registry   string             `yaml:"registry"`
+	Needs      []string           `yaml:"needs"`
 }
 
 // Image holds the information about a Docker image.
@@ -56,6 +57,7 @@ func NewImage(m map[string]interface{}) (*Image, error) {
 	v.SetDefault("target", "")
 	v.SetDefault("buildArgs", map[string]*string{})
 	v.SetDefault("registry", "")
+	v.SetDefault("needs", []string{})
 
 	for key, val := range m {
 		v.Set(key, val)
@@ -99,13 +101,33 @@ func (i *Image) FullName() string {
 	return registry + "/" + name
 }
 
+// BuildDeps builds all the images that are needed by the image.
+// It runs as a DFS algorithm.
+func (i *Image) BuildDeps() error {
+	for _, dep := range i.Config.Needs {
+		imgDep, exists := FindImage(dep)
+		if !exists {
+			return fmt.Errorf("Image with ID %s not found", dep)
+		}
+		_, err := imgDep.Build()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Build wraps the internal build function,
 // it guarantees to construct the image only once by using sync.Once.
 // If the image was already built, it returns (false, nil).
 // If any error occurs, it returns (false, err).
 // If the image was built succesfully, it returns (true, nil).
 func (i *Image) Build() (bool, error) {
-	var err error
+	err := i.BuildDeps()
+	if err != nil {
+		return false, err
+	}
+
 	built := false
 	i.buildOnce.Do(func() {
 		ctx := context.Background()

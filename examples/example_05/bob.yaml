@@ -1,0 +1,10 @@
+images:
+  - name: from-bob
+    registry: vitorfhc
+    context: ./from-bob-image
+    needs:
+      - bob
+  - id: bob
+    name: bob
+    registry: vitorfhc
+    context: ./bob-image
