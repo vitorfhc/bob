@@ -1,5 +1,8 @@
 # Bob, the builder
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/09a3057a188cff0b2f1c/maintainability)](https://codeclimate.com/github/vitorfhc/bob/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/09a3057a188cff0b2f1c/test_coverage)](https://codeclimate.com/github/vitorfhc/bob/test_coverage)
+
 > Bob is an automated multiple Docker images builder. It works by defining a simple YAML file and running its commands.
 
 ### Under development

@@ -48,11 +48,19 @@ jobs:
         with:
           go-version: 1.18
 
-      - name: Run tests
-        run: go test -v -coverprofile c.out ./...
-      
-      - name: Coverage
-        run: go tool cover -func c.out
+      - name: Set up CodeClimate
+        run: |
+          curl -LO https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+          chmod +x ./test-reporter-latest-linux-amd64
+          ./test-reporter-latest-linux-amd64 before-build
+
+      - name: Run Tests
+        run: go test ./... -coverprofile c.out
+
+      - name: Upload to CodeClimate
+        run: ./test-reporter-latest-linux-amd64 after-build --prefix github.com/vitorfhc/bob/
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
   release:
     runs-on: ubuntu-latest
