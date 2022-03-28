@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/vitorfhc/bob/pkg/config"
 )
 
 var rootCmd = &cobra.Command{
@@ -14,7 +16,7 @@ All you need is a YAML file which has everything you need configured.
 
 Examples:
   bob build
-  bob build --file bobber.yaml`,
+  bob push`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -27,7 +29,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringP("file", "f", "bob.yaml", "yaml configuration file")
-	rootCmd.MarkFlagFilename("file")
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "wether to print debug messages")
+	viper.BindPFlag(config.DebugKey, rootCmd.PersistentFlags().Lookup("debug"))
 }

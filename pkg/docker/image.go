@@ -12,11 +12,14 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"github.com/vitorfhc/bob/pkg/config"
 	"github.com/vitorfhc/bob/pkg/docker/outputs"
 	"github.com/vitorfhc/bob/pkg/helpers/dkr"
 )
 
-// ImageConfig has all configuration needed from a YAML file.
+// ImageConfig has all the configurations for a Docker image.
+// They are defined in the bob.yaml file.
 type ImageConfig struct {
 	Name       string             `yaml:"name"`
 	Tags       []string           `yaml:"tags"`
@@ -29,29 +32,51 @@ type ImageConfig struct {
 
 // Image holds the information about a Docker image.
 type Image struct {
-	Config *ImageConfig
-
+	Config    *ImageConfig
 	buildOnce sync.Once
+	pushOnce  sync.Once
 	logger    *logrus.Entry
 }
 
 // NewImage creates an Image using the given configuration.
-func NewImage(cfg *ImageConfig) *Image {
-	return &Image{
-		Config: cfg,
+func NewImage(m map[string]interface{}) (*Image, error) {
+	img := &Image{}
+
+	v := viper.New()
+	v.SetDefault("name", "")
+	v.SetDefault("tags", []string{"latest"})
+	v.SetDefault("context", ".")
+	v.SetDefault("dockerfile", "Dockerfile")
+	v.SetDefault("target", "")
+	v.SetDefault("buildArgs", map[string]*string{})
+	v.SetDefault("registry", "")
+
+	for key, val := range m {
+		v.Set(key, val)
 	}
+
+	err := v.Unmarshal(&img.Config)
+	if err != nil {
+		return nil, err
+	}
+
+	return img, nil
 }
 
 // FullName joins the registry with image name
 func (i *Image) FullName() string {
-	cfg := i.Config
-	if cfg.Registry == "" {
-		return cfg.Name
+	registry := i.Config.Registry
+	name := i.Config.Name
+
+	if registry == "" {
+		return name
 	}
-	if strings.HasSuffix(cfg.Registry, "/") {
-		return cfg.Registry + cfg.Name
+
+	if strings.HasSuffix(registry, "/") {
+		return registry + name
 	}
-	return cfg.Registry + "/" + cfg.Name
+
+	return registry + "/" + name
 }
 
 // Build wraps the internal build function,
@@ -74,14 +99,10 @@ func (i *Image) Build() (bool, error) {
 
 // Build constructs the Docker image.
 func (i *Image) build(ctx context.Context) error {
-	i.log(logrus.InfoLevel, "Building image", i.FullName())
+	i.log(logrus.InfoLevel, "Building image ", i.FullName())
 
-	cfg := i.Config
-	if cfg.Context == "" {
-		cfg.Context = "."
-	}
-
-	contextPacked, err := archive.TarWithOptions(cfg.Context, &archive.TarOptions{})
+	context := i.Config.Context
+	contextPacked, err := archive.TarWithOptions(context, &archive.TarOptions{})
 	if err != nil {
 		return err
 	}
@@ -94,16 +115,16 @@ func (i *Image) build(ctx context.Context) error {
 	}
 	response, err := dockerClient.ImageBuild(ctx, contextPacked, types.ImageBuildOptions{
 		Tags:       i.FullNamesWithTags(),
-		Dockerfile: cfg.Dockerfile,
-		Target:     cfg.Target,
-		BuildArgs:  cfg.BuildArgs,
+		Dockerfile: i.Config.Dockerfile,
+		Target:     i.Config.Target,
+		BuildArgs:  i.Config.BuildArgs,
 	})
 	if err != nil {
 		return err
 	}
 	defer func() {
 		response.Body.Close()
-		i.log(logrus.InfoLevel, "Elapsed time", time.Since(now).String())
+		i.log(logrus.InfoLevel, "Elapsed time ", time.Since(now).String())
 	}()
 
 	buildOutput := &outputs.BuildOutput{}
@@ -116,9 +137,32 @@ func (i *Image) build(ctx context.Context) error {
 	return nil
 }
 
-// Push sends the Docker image to the registry
-func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
-	authJSON, err := json.Marshal(authCfg)
+// Push wraps the internal push function, it guarantees to push the image only once by using sync.Once.
+// If the image was already pushed, it returns (false, nil).
+// If any error occurs, it returns (false, err).
+// If the image was pushed succesfully, it returns (true, nil).
+func (i *Image) Push() (bool, error) {
+	var err error
+	var pushed bool
+	i.pushOnce.Do(func() {
+		ctx := context.Background()
+		err = i.push(ctx)
+		if err != nil {
+			pushed = true
+		}
+	})
+	return pushed, err
+}
+
+func (i *Image) push(ctx context.Context) error {
+	username := viper.GetString(config.UsernameKey)
+	password := viper.GetString(config.PasswordKey)
+	auth := types.AuthConfig{
+		Username: username,
+		Password: password,
+	}
+
+	authJSON, err := json.Marshal(auth)
 	if err != nil {
 		return err
 	}
@@ -127,14 +171,14 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 		RegistryAuth: authB64,
 	}
 
-	cfg := i.Config
+	tags := i.Config.Tags
 	dockerClient, err := NewClient()
 	if err != nil {
 		return err
 	}
-	for _, tag := range cfg.Tags {
+	for _, tag := range tags {
 		fullName := i.FullName() + ":" + tag
-		i.log(logrus.InfoLevel, "Pushing image", fullName)
+		i.log(logrus.InfoLevel, "Pushing image ", fullName)
 		body, err := dockerClient.ImagePush(ctx, fullName, pushOptions)
 		if err != nil {
 			return err
@@ -155,15 +199,16 @@ func (i *Image) Push(ctx context.Context, authCfg types.AuthConfig) error {
 // FullNamesWithTags returns a list of strings, each string is the full name
 // of the image with one of its tags.
 func (i *Image) FullNamesWithTags() []string {
-	if len(i.Config.Tags) == 0 {
+	tags := i.Config.Tags
+	if len(tags) == 0 {
 		return []string{i.FullName() + ":latest"}
 	}
 
-	var tags []string
-	for _, tag := range i.Config.Tags {
-		tags = append(tags, i.FullName()+":"+tag)
+	var fullnames []string
+	for _, tag := range tags {
+		fullnames = append(fullnames, i.FullName()+":"+tag)
 	}
-	return tags
+	return fullnames
 }
 
 func (i *Image) initLogger() {
