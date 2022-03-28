@@ -98,23 +98,22 @@ Use "bob [command] --help" for more information about a command.
 
 In the [examples folder](examples) you can find some ways to use `bob`.
 
-Take a look at [this example's](examples/example_03/bob.yaml) YAML:
+Take a look at [this example's](examples/example_05/bob.yaml) file:
 
 ```yaml
 images:
-- name: alpine-dynamic
-  tags:
-  - "3.14-dynamic"
-  context: .
-  dockerfile: alpine/Dockerfile
-  buildArgs:
-    ALPINE_IMAGE: alpine:3.10
-- name: nginx-custom
-  tags:
-  - "custom-build"
-  context: .
-  dockerfile: nginx/Dockerfile
+  - name: from-bob
+    registry: vitorfhc
+    context: ./from-bob-image
+    needs:
+      - bob
+  - id: bob
+    name: bob
+    registry: vitorfhc
+    context: ./bob-image
 ```
+
+The output for the first image will be an image tagged `vitorfhc/from-bob:latest`. This image will be built only after `vitorfhc/bob:latest` because it needs it. After building them with `bob build`, you may push with `bob push`. Simple, isn't it?
 
 > **Warning:** don't forget that the Dockerfile path (`.images[].dockerfile`) is relative to the context (`.images[].context`)!
 > Also, don't forget the context is relative to which directory you run `bob` command!
