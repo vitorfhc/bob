@@ -11,7 +11,7 @@ Tasks:
 - [x] Feature: build images
 - [x] Feature: push images
 - [x] Tests: pkg/helpers
-- [ ] Improvement: use [spf13/viper](https://github.com/spf13/viper) for better configuration
+- [x] Improvement: use [spf13/viper](https://github.com/spf13/viper) for better configuration
 - [ ] Tests: pkg/docker
 - [ ] Feature: dependencies between images
 - [ ] Feature: parallel building
@@ -49,7 +49,6 @@ All you need is a YAML file which has everything you need configured.
 
 Examples:
   bob build
-  bob build --file bobber.yaml
 
 Usage:
   bob [command]
@@ -62,7 +61,6 @@ Available Commands:
 
 Flags:
   -d, --debug         wether to print debug messages
-  -f, --file string   yaml configuration file (default "bob.yaml")
   -h, --help          help for bob
 
 Use "bob [command] --help" for more information about a command.
@@ -74,6 +72,9 @@ Use "bob [command] --help" for more information about a command.
 
 | field | type | description | default | required |
 |----|---|---|---|---|
+| .debug | boolean | if debug mode is on | false | |
+| .username | string | username to be used on push | "" | |
+| .password | string | password to be used on push | "" | |
 | .images | list | list of images ([image schema](#image-schema)) | [] | |
 
 ### image schema
