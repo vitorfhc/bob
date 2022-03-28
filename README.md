@@ -84,6 +84,7 @@ Use "bob [command] --help" for more information about a command.
 
 | field | type | description | default | required |
 |----|---|---|---|---|
+| .id | string | unique identifier for the image | random string | |
 | .name | string | name of the image | | X |
 | .tags | list of strings | image tags | [] (this defaults to a single tag `latest`) | |
 | .context | string | build context | current dir | |
