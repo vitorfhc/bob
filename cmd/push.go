@@ -53,5 +53,5 @@ func init() {
 	viper.BindPFlag(config.UsernameKey, pushCmd.Flags().Lookup("username"))
 
 	pushCmd.Flags().StringP("password", "p", "", "password for the registry")
-	viper.BindPFlag(config.PasswordKey, pushCmd.Flags().Lookup("username"))
+	viper.BindPFlag(config.PasswordKey, pushCmd.Flags().Lookup("password"))
 }
