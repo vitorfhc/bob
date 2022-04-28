@@ -16,6 +16,7 @@ Tasks:
 - [x] Tests: pkg/helpers
 - [x] Improvement: use [spf13/viper](https://github.com/spf13/viper) for better configuration
 - [x] Feature: dependencies between images
+- [ ] Drop Docker support and go for CRI instead
 - [ ] Tests: pkg/docker
 - [ ] Feature: parallel building
 - [ ] Feature: parallel pushing
