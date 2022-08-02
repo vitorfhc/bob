@@ -1,6 +1,6 @@
 module github.com/vitorfhc/bob
 
-go 1.18
+go 1.19
 
 require (
 	github.com/docker/docker v20.10.14+incompatible
