@@ -3,7 +3,7 @@ module github.com/vitorfhc/bob
 go 1.19
 
 require (
-	github.com/docker/docker v20.10.14+incompatible
+	github.com/docker/docker v20.10.21+incompatible
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.13.0
