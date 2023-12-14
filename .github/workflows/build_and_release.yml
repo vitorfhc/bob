@@ -33,7 +33,7 @@ jobs:
           go build -v -o "bin/bob-$GOOS-$GOARCH-$GITHUB_REF_NAME"
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaries
           path: bin/*
