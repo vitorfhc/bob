@@ -79,7 +79,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          semantic_version: 19.0.2
+          semantic_version: 19.0.5
           branch: main
           extra_plugins: |
             @semantic-release/commit-analyzer
